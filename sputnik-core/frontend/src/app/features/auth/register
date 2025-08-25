@@ -1,0 +1,49 @@
+// src/app/features/auth/register/register.component.ts
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
+})
+export class RegisterComponent {
+  registrationForm: FormGroup;
+  isSubmitting = false;
+  feedbackMessage: string = '';
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.registrationForm = this.fb.group({
+      emailAddress: ['', [Validators.required, Validators.email]],
+      userPassword: ['', [Validators.required, Validators.minLength(8)]],
+      givenName: ['', Validators.required],
+      familyName: ['', Validators.required]
+    });
+  }
+
+  get controls() { return this.registrationForm.controls; }
+
+  onSubmit() {
+    this.isSubmitting = true;
+    if (this.registrationForm.valid) {
+      this.authService.register(this.registrationForm.value).subscribe({
+        next: () => {
+          this.router.navigate(['/login']);
+        },
+        error: (error) => {
+          this.feedbackMessage = error.error.message || 'Registration failed. Please try again.';
+          this.isSubmitting = false;
+        }
+      });
+    } else {
+      this.feedbackMessage = 'Please fill in all required fields correctly.';
+      this.isSubmitting = false;
+    }
+  }
+}

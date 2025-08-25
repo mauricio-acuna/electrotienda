@@ -1,0 +1,63 @@
+// frontend/src/app/features/orders/order-history/order-history.component.ts
+import { Component, OnInit } from '@angular/core';
+import { OrderService } from '../../../core/services/order.service';
+import { Order } from '../../../shared/models/order.model';
+
+@Component({
+  selector: 'app-order-history',
+  templateUrl: './order-history.component.html',
+  styleUrls: ['./order-history.component.css']
+})
+export class OrderHistoryComponent implements OnInit {
+  orders: Order[] = [];
+
+  constructor(private orderService: OrderService) {}
+
+  ngOnInit(): void {
+    this.loadOrderHistory();
+  }
+
+  loadOrderHistory(): void {
+    this.orderService.getOrderHistory().subscribe((data: Order[]) => {
+      this.orders = data;
+    });
+  }
+}
+
+// frontend/src/app/features/orders/order-history/order-history.component.html
+<div class="order-history">
+  <h2>Your Order History</h2>
+  <ul>
+    <li *ngFor="let order of orders">
+      <div>
+        <strong>Order ID:</strong> {{ order.id }} <br>
+        <strong>Total:</strong> {{ order.total | currency }} <br>
+        <strong>Status:</strong> {{ order.status }} <br>
+        <strong>Date:</strong> {{ order.createdAt | date }} <br>
+      </div>
+    </li>
+  </ul>
+</div>
+
+// frontend/src/app/features/orders/order-history/order-history.component.css
+.order-history {
+  padding: 20px;
+}
+
+.order-history h2 {
+  margin-bottom: 20px;
+}
+
+.order-history ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.order-history li {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+// frontend/src/app/features/orders/order-history/index.ts
+export * from './order-history.component';

@@ -1,0 +1,235 @@
+# Product Requirements Document (PRD) - Sputnik-Core
+
+## 1. Visión del Producto
+
+**Sputnik-Core** es una plataforma e-commerce integral para la venta de dispositivos electrónicos, especializándose en telefonía móvil, con capacidades de marketplace para intercambio de productos usados entre usuarios.
+
+### 1.1 Objetivo Principal
+Crear una solución escalable que inicie como una PyME y evolucione hacia una cadena de tiendas electrónicas con múltiples sucursales/franquicias.
+
+## 2. Alcance del Proyecto
+
+### 2.1 Funcionalidades Core
+- **E-commerce B2C**: Venta directa de productos nuevos
+- **Marketplace C2C**: Intercambio de productos usados entre usuarios
+- **Gestión multitienda**: Soporte para franquicias/sucursales
+- **Sistema de pagos**: Procesamiento seguro de transacciones
+- **Gestión de inventario**: Control de stock multichannel
+
+### 2.2 Productos a Comercializar
+- Telefonía móvil (smartphones, tablets)
+- Accesorios electrónicos
+- Tarjetas de servicios/recarga
+- Suscripciones digitales
+- Productos de segunda mano (C2C)
+
+## 3. Arquitectura Tecnológica
+
+### 3.1 Stack Tecnológico
+```
+Frontend: Angular 16+
+Backend: Java 17+ con Spring Boot 3.x
+Base de Datos: PostgreSQL 15+
+Cache: Redis
+Seguridad: Spring Security + JWT
+Pagos: Integración con múltiples proveedores
+```
+
+### 3.2 Arquitectura Recomendada
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Angular SPA   │    │   Mobile App    │    │   Admin Panel   │
+└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
+          │                      │                      │
+          └──────────────────────┼──────────────────────┘
+                                 │
+┌─────────────────────────────────┼─────────────────────────────────┐
+│                        API Gateway / Load Balancer                │
+└─────────────────────────────────┼─────────────────────────────────┘
+                                 │
+    ┌────────────────────────────┼────────────────────────────┐
+    │                     Spring Boot Backend                 │
+    │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐      │
+    │  │   User      │ │  Product    │ │   Payment   │      │
+    │  │  Service    │ │  Service    │ │   Service   │      │
+    │  └─────────────┘ └─────────────┘ └─────────────┘      │
+    │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐      │
+    │  │   Order     │ │ Marketplace │ │   Store     │      │
+    │  │  Service    │ │  Service    │ │  Service    │      │
+    │  └─────────────┘ └─────────────┘ └─────────────┘      │
+    └────────────────────────────────┼────────────────────────────┘
+                                     │
+    ┌────────────────────────────────┼────────────────────────────┐
+    │                          Data Layer                         │
+    │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+    │  │ PostgreSQL  │ │    Redis    │ │   File      │          │
+    │  │ (Primary)   │ │   (Cache)   │ │  Storage    │          │
+    │  └─────────────┘ └─────────────┘ └─────────────┘          │
+    └─────────────────────────────────────────────────────────────┘
+```
+
+## 4. Módulos Principales
+
+### 4.1 Módulo de Usuarios
+- **Registro/Autenticación**: OAuth2, JWT
+- **Perfiles**: Datos personales, preferencias, historial
+- **Roles**: Cliente, Vendedor, Admin, Super Admin
+- **Verificación**: KYC para vendedores
+
+### 4.2 Módulo de Productos
+- **Catálogo**: Gestión de productos nuevos
+- **Categorización**: Jerarquía de categorías
+- **Especificaciones**: Detalles técnicos
+- **Multimedia**: Imágenes, videos, documentos
+- **Inventario**: Control de stock por sucursal
+
+### 4.3 Módulo Marketplace
+- **Listados P2P**: Productos de segunda mano
+- **Validación**: Verificación de productos usados
+- **Comisiones**: Sistema de fees por transacción
+- **Mediación**: Resolución de conflictos
+
+### 4.4 Módulo de Comercio
+- **Carrito**: Gestión de productos seleccionados
+- **Checkout**: Proceso de compra optimizado
+- **Órdenes**: Tracking y estados de pedidos
+- **Facturas**: Generación automática
+
+### 4.5 Módulo de Pagos
+- **Múltiples métodos**: Tarjetas, transferencias, wallets
+- **Seguridad**: PCI DSS compliance
+- **Tokenización**: Almacenamiento seguro
+- **Reembolsos**: Gestión de devoluciones
+
+### 4.6 Módulo de Opiniones/Calificaciones
+- **Reviews**: Sistema de reseñas
+- **Ratings**: Calificaciones por estrellas
+- **Moderación**: Control de contenido
+- **Reputación**: Scoring de vendedores
+
+### 4.7 Módulo Multi-tienda
+- **Sucursales**: Gestión de franquicias
+- **Inventario distribuido**: Stock por ubicación
+- **Configuración**: Personalización por tienda
+- **Reporting**: Analytics por sucursal
+
+## 5. Requerimientos No Funcionales
+
+### 5.1 Seguridad
+- **Autenticación**: Multi-factor authentication
+- **Autorización**: RBAC (Role-Based Access Control)
+- **Encriptación**: TLS 1.3, AES-256
+- **Compliance**: PCI DSS, GDPR
+- **Auditoría**: Logs de seguridad
+
+### 5.2 Performance
+- **Tiempo de respuesta**: < 2 segundos
+- **Concurrencia**: 1000+ usuarios simultáneos
+- **Disponibilidad**: 99.9% uptime
+- **Escalabilidad**: Horizontal scaling
+
+### 5.3 Usabilidad
+- **Responsive design**: Mobile-first
+- **Accessibility**: WCAG 2.1 AA
+- **PWA**: Progressive Web App capabilities
+- **SEO**: Optimización para motores de búsqueda
+
+## 6. Modelo de Datos Principales
+
+### 6.1 Entidades Core
+```sql
+-- Users
+users (id, email, password_hash, role, status, created_at)
+user_profiles (user_id, first_name, last_name, phone, address)
+
+-- Products
+products (id, name, description, category_id, brand, model, price)
+product_images (id, product_id, url, is_primary)
+inventory (id, product_id, store_id, quantity, reserved)
+
+-- Orders
+orders (id, user_id, total, status, payment_status, created_at)
+order_items (id, order_id, product_id, quantity, price)
+
+-- Marketplace
+marketplace_listings (id, seller_id, product_id, condition, price)
+transactions (id, buyer_id, seller_id, listing_id, amount, status)
+
+-- Reviews
+reviews (id, user_id, product_id, rating, comment, created_at)
+```
+
+## 7. Fases de Desarrollo
+
+### 7.1 Fase 1 - MVP (3-4 meses)
+- Autenticación básica
+- Catálogo de productos
+- Carrito y checkout básico
+- Pagos con un proveedor
+- Panel de administración básico
+
+### 7.2 Fase 2 - Marketplace (2-3 meses)
+- Registro de vendedores
+- Listados de segunda mano
+- Sistema de reviews
+- Comisiones y pagos a vendedores
+
+### 7.3 Fase 3 - Multi-tienda (2-3 meses)
+- Gestión de sucursales
+- Inventario distribuido
+- Reporting avanzado
+- APIs para partners
+
+### 7.4 Fase 4 - Optimización (1-2 meses)
+- Performance tuning
+- Mobile app
+- Analytics avanzados
+- Integraciones adicionales
+
+## 8. Consideraciones de Escalabilidad
+
+### 8.1 Técnicas de Escalabilidad
+- **Microservicios**: Eventual migration path
+- **Caching**: Redis para sesiones y datos frecuentes
+- **CDN**: Distribución de contenido estático
+- **Database sharding**: Para grandes volúmenes
+- **Load balancing**: Distribución de carga
+
+### 8.2 Monitoreo
+- **APM**: Application Performance Monitoring
+- **Logging**: Centralized logging with ELK stack
+- **Metrics**: Business and technical KPIs
+- **Alerting**: Proactive issue detection
+
+## 9. Riesgos y Mitigaciones
+
+### 9.1 Riesgos Técnicos
+- **Seguridad de pagos**: Implementar PCI DSS
+- **Performance**: Load testing continuo
+- **Escalabilidad**: Arquitectura cloud-native
+
+### 9.2 Riesgos de Negocio
+- **Competencia**: Diferenciación por servicio
+- **Regulaciones**: Compliance desde el diseño
+- **Fraude**: Sistemas de detección automática
+
+## 10. Métricas de Éxito
+
+### 10.1 KPIs Técnicos
+- Tiempo de respuesta promedio
+- Uptime del sistema
+- Conversión de checkout
+- Performance de búsquedas
+
+### 10.2 KPIs de Negocio
+- Número de usuarios registrados
+- Volumen de transacciones
+- Valor promedio de orden
+- Retención de usuarios
+- NPS (Net Promoter Score)
+
+---
+
+**Documento creado**: Agosto 2025  
+**Versión**: 1.0  
+**Próxima revisión**: Septiembre 2025

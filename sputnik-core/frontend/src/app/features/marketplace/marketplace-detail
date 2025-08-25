@@ -1,0 +1,39 @@
+// frontend/src/app/features/marketplace/marketplace-detail/marketplace-detail.component.ts
+
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { MarketplaceService } from '../../../core/services/marketplace.service';
+import { MarketplaceDto } from '../../../shared/models/marketplace.model';
+
+@Component({
+  selector: 'app-marketplace-detail',
+  templateUrl: './marketplace-detail.component.html',
+  styleUrls: ['./marketplace-detail.component.css']
+})
+export class MarketplaceDetailComponent implements OnInit {
+  marketplaceItem: MarketplaceDto | null = null;
+  itemId: string | null = null;
+
+  constructor(
+    private route: ActivatedRoute,
+    private marketplaceService: MarketplaceService
+  ) {}
+
+  ngOnInit(): void {
+    this.itemId = this.route.snapshot.paramMap.get('id');
+    if (this.itemId) {
+      this.loadMarketplaceItem(this.itemId);
+    }
+  }
+
+  loadMarketplaceItem(id: string): void {
+    this.marketplaceService.getMarketplaceItem(id).subscribe(
+      (data: MarketplaceDto) => {
+        this.marketplaceItem = data;
+      },
+      (error) => {
+        console.error('Error loading marketplace item', error);
+      }
+    );
+  }
+}

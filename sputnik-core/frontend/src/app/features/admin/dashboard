@@ -1,0 +1,2 @@
+// frontend/src/app/features/admin/dashboard/index.ts
+export * from './dashboard.component';

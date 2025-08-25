@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/sputnik_core_prod}
+    username: ${DATABASE_USERNAME:sputnik_user}
+    password: ${DATABASE_PASSWORD:sputnik_password}
+  
+  jpa:
+    show-sql: false
+    
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    database: 0
+    password: ${REDIS_PASSWORD:}
+    
+logging:
+  level:
+    com.sputnik.core: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    
+app:
+  jwt:
+    secret: ${JWT_SECRET:sputnikCoreSecretKeyForJWTTokenGeneration2023!}
+    expiration: ${JWT_EXPIRATION:86400000}
+  
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:https://yourdomain.com}
+    
+  file:
+    upload-dir: ${FILE_UPLOAD_DIR:/var/uploads}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: never

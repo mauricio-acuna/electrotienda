@@ -1,0 +1,31 @@
+// frontend/src/app/features/marketplace/marketplace-list/marketplace-list.component.ts
+
+import { Component, OnInit } from '@angular/core';
+import { MarketplaceService } from '../../../core/services/marketplace.service';
+import { MarketplaceDto } from '../../../shared/models/marketplace.model';
+
+@Component({
+  selector: 'app-marketplace-list',
+  templateUrl: './marketplace-list.component.html',
+  styleUrls: ['./marketplace-list.component.css']
+})
+export class MarketplaceListComponent implements OnInit {
+  listings: MarketplaceDto[] = [];
+
+  constructor(private marketplaceService: MarketplaceService) {}
+
+  ngOnInit(): void {
+    this.loadMarketplaceListings();
+  }
+
+  loadMarketplaceListings(): void {
+    this.marketplaceService.getMarketplaceListings().subscribe(
+      (data: MarketplaceDto[]) => {
+        this.listings = data;
+      },
+      (error) => {
+        console.error('Error loading marketplace listings', error);
+      }
+    );
+  }
+}

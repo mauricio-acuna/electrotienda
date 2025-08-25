@@ -1,0 +1,26 @@
+// frontend/src/app/shared/components/loading/loading.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-loading',
+  template: `
+    <div class="loading-spinner">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+    }
+  `]
+})
+export class LoadingComponent { }
